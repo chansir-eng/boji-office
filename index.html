@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#f6f7f3">
-  <meta name="description" content="Boji 薄肌周期估算：输入当前身体状态与训练情况，直接估算达到薄肌参考状态的时间。所有计算在浏览器本地完成。">
-  <title>Boji · 薄肌周期估算</title>
+  <meta name="description" content="Boji 薄肌时间情景模拟：代入当前状态，对比明确假设下的身体组成变化；用于科普演示，不预测个人完成时间。所有计算在浏览器本地完成。">
+  <title>Boji · 薄肌时间情景模拟</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/fonts/boji-display.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="assets/styles.css">
@@ -24,13 +24,13 @@
     <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
   </svg>
 
-  <header class="site-header"><div class="wrap header-inner"><a class="logo" href="#top" aria-label="Boji 首页"><span class="logo-mark" aria-hidden="true"><i></i><i></i></span><span class="wordmark">boji<span class="logo-description">薄肌周期估算</span></span></a><nav aria-label="主导航"><a href="#calculator">周期估算</a><a href="#visual">体脂参考</a><a href="#science">模型与依据</a></nav><span class="header-status"><svg class="icon" aria-hidden="true"><use href="#i-lock"></use></svg>仅在本地计算</span></div></header>
+  <header class="site-header"><div class="wrap header-inner"><a class="logo" href="#top" aria-label="Boji 首页"><span class="logo-mark" aria-hidden="true"><i></i><i></i></span><span class="wordmark">boji<span class="logo-description">薄肌时间情景模拟</span></span></a><nav aria-label="主导航"><a href="#calculator">情景模拟</a><a href="#visual">测量与误差</a><a href="#science">模型与依据</a></nav><span class="header-status"><svg class="icon" aria-hidden="true"><use href="#i-lock"></use></svg>仅在本地计算</span></div></header>
 
   <main id="top">
-    <section class="intro wrap" aria-labelledby="introTitle"><h1 id="introTitle">练到薄肌，<br><em>大概要多久？</em></h1><div class="intro-copy"><p>填写当前的身体状态和训练情况，直接估算到薄肌的时间。对比三种变化情景，了解可能的进展范围。</p><div class="intro-note"><span><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>无需注册</span><span><svg class="icon" aria-hidden="true"><use href="#i-lock"></use></svg>不上传个人数据</span></div></div></section>
+    <section class="intro wrap" aria-labelledby="introTitle"><h1 id="introTitle">练到薄肌，<br><em>大概要多久？</em></h1><div class="intro-copy"><p>把当前状态代入三组假设，看看结果如何变化。用于理解时间尺度，不预测你会在哪一周练成。</p><div class="intro-note"><span><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>无需注册</span><span><svg class="icon" aria-hidden="true"><use href="#i-lock"></use></svg>不上传个人数据</span></div></div></section>
 
     <section id="calculator" class="calculator-section wrap" aria-labelledby="calculatorTitle">
-      <h2 id="calculatorTitle" class="sr-only">当前状态与薄肌周期估算</h2>
+      <h2 id="calculatorTitle" class="sr-only">当前状态与薄肌时间情景模拟</h2>
       <div class="workbench">
         <form id="applicationForm" class="input-panel" novalidate>
           <div class="panel-head"><h2>填写当前状态</h2><button id="demo" class="mini-button" type="button"><svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>重置示例</button></div><p id="formHint" class="form-intro">已填入一组示例数据，可直接修改。</p>
@@ -39,64 +39,65 @@
             <div class="fields">
               <div class="field"><label for="height">身高 <span>cm</span></label><input id="height" name="height" type="number" inputmode="decimal" min="140" max="210" value="175" step="1" required></div>
               <div class="field"><label for="weight">体重 <span>kg</span></label><input id="weight" name="weight" type="number" inputmode="decimal" min="35" max="250" value="78" step="0.1" required></div>
-              <div class="field"><label for="bf">当前体脂率 <span>%</span></label><input id="bf" name="bf" type="number" inputmode="decimal" min="5" max="55" value="24" step="0.5" required><small><a href="#visual">查看体脂参考 <svg class="icon " aria-hidden="true"><use href="#i-up-right"></use></svg></a></small></div>
-              <div class="field"><label for="age">年龄 <span>岁</span></label><input id="age" name="age" type="number" inputmode="numeric" min="18" max="65" value="28" step="1" required></div>
-              <div class="field full"><label for="experience">抗阻训练经历</label><select id="experience" name="experience"><option value="new">新手 · 规律训练少于 1 年</option><option value="return">重新训练 · 中断后恢复</option><option value="trained">有经验 · 规律训练至少 2 年</option></select></div>
-              <div class="field full"><label for="sessions">每周力量训练</label><select id="sessions" name="sessions"><option value="2">2 次 / 周</option><option value="3" selected>3 次 / 周</option><option value="4">4 次及以上 / 周</option><option value="0">无法规律进行（不估算增肌时长）</option></select></div>
+              <div class="field"><label for="bf">当前体脂率 <span>%</span></label><input id="bf" name="bf" type="number" inputmode="decimal" min="5" max="55" value="24" step="0.5" required><small><a href="#visual">理解体脂输入 <svg class="icon " aria-hidden="true"><use href="#i-up-right"></use></svg></a></small></div>
+              <div class="field"><label for="age">年龄 <span>岁</span></label><input id="age" name="age" type="number" inputmode="numeric" min="18" max="65" value="28" step="1" required><small>仅确认年龄适用范围</small></div>
+              <div class="field full"><label for="experience">抗阻训练经历</label><select id="experience" name="experience"><option value="new">新手 · 规律训练少于 1 年</option><option value="return">重新训练 · 中断后恢复</option><option value="trained">有经验 · 规律训练至少 2 年</option></select><small>用于选择演示参数，不代表个人增长速度</small></div>
+              <div class="field full"><label for="sessions">每周力量训练</label><select id="sessions" name="sessions"><option value="2">2 次 / 周</option><option value="3" selected>3 次 / 周</option><option value="4">4 次及以上 / 周</option><option value="0">无法规律进行（不演算去脂体重增长）</option></select><small>2 次及以上不再按次数增加模拟增长率</small></div>
             </div>
           </fieldset>
           <div id="error" class="error" role="alert"></div>
-          <button type="submit" id="calculate" class="button button-primary action">估算所需时间 <svg class="icon " aria-hidden="true"><use href="#i-arrow"></use></svg></button>
+          <button type="submit" id="calculate" class="button button-primary action">查看假设结果 <svg class="icon " aria-hidden="true"><use href="#i-arrow"></use></svg></button>
           <p id="submitStatus" class="sr-only" role="status" aria-live="polite"></p>
           <p class="note">适用于 18–65 岁健康成年男性。极低体脂、疾病或用药、未成年人、孕产期等情况不适用。</p>
           <p class="privacy-note"><svg class="icon " aria-hidden="true"><use href="#i-lock"></use></svg>参数仅在本机计算，不上传、不储存。</p>
         </form>
 
         <section id="results" class="result-panel" aria-labelledby="resultTitle" aria-live="polite" aria-atomic="false">
-          <div class="result-head"><h2 id="resultTitle">薄肌周期估算</h2><span id="resultStatus" class="result-status" data-state="ready">示例估算</span></div>
-          <p class="preset-note">薄肌参考：体脂约 12%，并具备一定肌量。<a href="#definition">如何定义</a></p>
-          <p class="result-label">达到薄肌参考的时间范围</p>
+          <div class="result-head"><h2 id="resultTitle">薄肌时间情景模拟</h2><span id="resultStatus" class="result-status" data-state="ready">示例演算</span></div>
+          <p class="preset-note">本站数字参考：体脂约 12% 与标准化 FFMI 20.5。<a href="#definition">如何定义</a></p>
+          <p class="result-label">三组假设下的模拟周数</p>
           <div id="time" class="big-num">— <small>周</small></div>
-          <div class="estimate-context"><span>三种情景，比较不同进展速度</span><span>中心情景 <strong id="centralWeeks">—</strong></span></div>
+          <div class="estimate-context"><span>组合假设对照，不是置信区间</span><span>中间假设 <strong id="centralWeeks">—</strong></span></div>
+          <p id="validScenarioNote" class="valid-scenario-note"></p>
           <p id="headline" class="range-desc">填写当前状态，查看周期估算。</p>
-          <div class="process-summary"><div><span><i></i>减脂阶段</span><strong id="cutWeeks">—</strong></div><div><span><i></i>增肌阶段</span><strong id="bulkWeeks">—</strong></div></div>
-          <div class="process-caption">中心情景 · 两阶段按顺序估算<span id="phaseSummary" class="breakdown"></span></div>
-          <div id="stats" class="stats"><div class="stat"><strong id="ffmiNow">—</strong><span>当前标准化 FFMI</span></div><div class="stat"><strong id="leanMass">—</strong><span>当前去脂体重 · kg</span></div><div class="stat"><strong id="targetWeight">—</strong><span>目标体重 · 中心情景</span></div></div>
+          <div class="process-summary"><div><span><i></i>减脂阶段</span><strong id="cutWeeks">—</strong></div><div><span><i></i>补足去脂体重</span><strong id="bulkWeeks">—</strong></div></div>
+          <div class="process-caption">中间假设 · 串行顺序只是演示假设<span id="phaseSummary" class="breakdown"></span></div>
+          <div id="stats" class="stats"><div class="stat"><strong id="ffmiNow">—</strong><span>当前标准化 FFMI</span></div><div class="stat"><strong id="leanMass">—</strong><span>当前去脂体重 · kg</span></div><div class="stat"><strong id="targetWeight">—</strong><span>模拟终点体重 · 中间假设</span></div></div>
           <div class="composition"><div class="bar-title"><span>当前体重构成</span><span id="compositionText">—</span></div><div class="bar"><div id="barLean" class="lean"></div><div id="barFat" class="fat"></div></div><div class="legend"><span><i class="dot lean"></i>去脂体重（不等于纯肌肉）</span><span><i class="dot fat"></i>脂肪量</span></div></div>
-          <div class="chart-box"><div class="chart-top"><h3>变化趋势</h3><div class="segmented-control" role="group" aria-label="图表指标"><button type="button" data-chart-metric="bf" aria-pressed="true">体脂率</button><button type="button" data-chart-metric="w" aria-pressed="false">体重</button></div></div><svg id="chart" viewBox="0 0 600 220" role="img" aria-label="三种情景的体脂率变化模拟" aria-describedby="chartDescription"></svg><div class="chart-bottom"><div class="chart-legend"><span class="slow">保守</span><span class="mid">中心</span><span class="fast">较快</span></div><p id="chartDescription">每 4 周取样 · 非真实监测</p></div></div>
-          <table class="scenario-table"><caption class="sr-only">三种情景的预计变化周期，单位为周</caption><thead><tr><th scope="col">情景</th><th scope="col">减脂期</th><th scope="col">增肌期</th><th scope="col">总周期</th></tr></thead><tbody id="scenarios"></tbody></table>
-          <details class="result-details"><summary>如何理解这个结果？<svg class="icon " aria-hidden="true"><use href="#i-plus"></use></svg></summary><p id="advice" class="advice">模拟器会同时展示减脂、增肌需求；两者并不总能同时以最大速度发生。</p></details>
+          <div class="chart-box"><div class="chart-top"><h3>变化趋势</h3><div class="segmented-control" role="group" aria-label="图表指标"><button type="button" data-chart-metric="bf" aria-pressed="true">体脂率</button><button type="button" data-chart-metric="w" aria-pressed="false">体重</button></div></div><svg id="chart" viewBox="0 0 600 220" role="img" aria-label="三种情景的体脂率变化模拟" aria-describedby="chartDescription"></svg><div class="chart-bottom"><div class="chart-legend"><span class="slow">审慎</span><span class="mid">中间</span><span class="fast">乐观</span></div><p id="chartDescription">每 4 周取样 · 非真实监测</p></div></div>
+          <table class="scenario-table"><caption class="sr-only">三组假设的模拟周数，不代表个人预测</caption><thead><tr><th scope="col">假设</th><th scope="col">减脂期</th><th scope="col">去脂体重补足</th><th scope="col">总周期</th></tr></thead><tbody id="scenarios"></tbody></table>
+          <section class="sensitivity" aria-labelledby="sensitivityTitle"><h3 id="sensitivityTitle">体脂输入差一点，结果会差多少？</h3><p id="sensitivityNote">仅把体脂输入上下改变 3 个百分点，其他条件不变；不是设备误差范围或置信区间。</p><table class="scenario-table"><thead><tr><th scope="col">体脂输入</th><th scope="col">计算去脂体重</th><th scope="col">中间假设</th></tr></thead><tbody id="sensitivityRows"></tbody></table></section><details class="assumption-details"><summary>这三组假设分别用了什么参数？<svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg></summary><p>以下参数是未校准的演示假设。乐观组同时假定较快减重、较少去脂损失和较快增长，不意味着减脂越快就越保肌。</p><div class="table-scroll"><table class="scenario-table"><thead><tr><th scope="col">组合</th><th scope="col">名义减重 / 周</th><th scope="col">去脂损失占比</th><th scope="col">去脂增长 / 4周</th></tr></thead><tbody id="scenarioAssumptions"></tbody></table></div><p>减重速率另受分段系数影响；增长、损失比例、每增加 1 kg 去脂体重伴随 0.08 kg 脂肪，均不是个人生理定律。</p></details>
+          <details class="result-details"><summary>如何理解这个结果？<svg class="icon " aria-hidden="true"><use href="#i-plus"></use></svg></summary><p id="advice" class="advice">去脂体重变化不等于净肌肉增长，模型阶段也不是个人训练安排。</p></details>
           <p class="fineprint">三种情景采用不同假设，<b>不代表置信区间或经过验证的个体预测</b>。体脂输入每差 3 个百分点，结果可能明显变化。<a href="#science">了解模型边界 <svg class="icon " aria-hidden="true"><use href="#i-up-right"></use></svg></a></p>
         </section>
       </div>
     </section>
 
-    <section id="visual" class="section visual-section wrap" aria-labelledby="visualTitle">
-      <div class="section-title"><div><h2 id="visualTitle">体脂参考</h2><p>不确定当前体脂？选择接近的视觉档位，作为粗略起点。</p></div><span class="section-aside">视觉分组，非实测数值</span></div>
-      <div class="photo-grid" id="photoGrid"><button aria-pressed="false" class="photo-card" type="button" data-bf="12" aria-label="选择12%体脂示例"><img src="https://images.pexels.com/photos/8874714/pexels-photo-8874714.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=460" alt="真人照片，腹肌明显的精瘦上半身" loading="lazy"><div class="pc"><strong>10–13%</strong><span>线条高度清晰 · 视觉参考</span><em>选择 12%</em></div></button><button aria-pressed="false" class="photo-card" type="button" data-bf="16" aria-label="选择16%体脂示例"><img src="https://images.pexels.com/photos/27092692/pexels-photo-27092692.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=460" alt="真人照片，精瘦型上半身" loading="lazy"><div class="pc"><strong>14–18%</strong><span>线条可能可见 · 视觉参考</span><em>选择 16%</em></div></button><button aria-pressed="false" class="photo-card" type="button" data-bf="22" aria-label="选择22%体脂示例"><img src="https://images.pexels.com/photos/5714276/pexels-photo-5714276.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=460" alt="真人照片，腹部线条不明显的上半身" loading="lazy"><div class="pc"><strong>19–24%</strong><span>线条趋于柔和 · 视觉参考</span><em>选择 22%</em></div></button><button aria-pressed="false" class="photo-card" type="button" data-bf="28" aria-label="选择28%体脂示例"><img src="https://images.pexels.com/photos/5301497/pexels-photo-5301497.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=460" alt="真人照片，较丰满的上半身" loading="lazy"><div class="pc"><strong>25–31%</strong><span>脂肪覆盖较明显 · 视觉参考</span><em>选择 28%</em></div></button><button aria-pressed="false" class="photo-card" type="button" data-bf="35" aria-label="选择35%体脂示例"><img src="https://images.pexels.com/photos/4728884/pexels-photo-4728884.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=460" alt="真人照片，较丰满的腹部与上半身" loading="lazy"><div class="pc"><strong>32–40%</strong><span>脂肪覆盖显著 · 视觉参考</span><em>选择 35%</em></div></button></div>
-      <p class="photo-warning">照片为不同个体，百分比并非人物实测体脂。肌肉量、光线和角度都会影响判断，优先参考规范体成分测量。</p>
-      <details class="photo-disclaimer"><summary>参考照片的使用说明与来源 <svg class="icon " aria-hidden="true"><use href="#i-plus"></use></svg></summary><div><b>重要：</b>五张照片均为独立个体，体脂百分比<strong>并非照片人物的测量结果</strong>；这只是供你粗略选择起始体脂的视觉档位，不适合医学判断。照片受肌肉量、脂肪分布、光线与角度影响，误差可能较大。优先使用同一设备的规范体成分测量，并结合腰围、体重趋势与标准化照片。需要带有标注的第三方真人图表，可查看 <a href="https://ultimateperformance.com/your-goal/fat-loss/male-fat-loss/male-body-fat-comparison" target="_blank" rel="noopener noreferrer">Ultimate Performance 原始真人体脂对照</a>（外部资料，不保证每位人物的测量方法）。照片来自 Pexels：<a target="_blank" rel="noopener" href="https://www.pexels.com/photo/man-posing-shirtless-showing-muscles-8874714/">01</a> · <a target="_blank" rel="noopener" href="https://www.pexels.com/photo/portrait-of-shirtless-skinny-athletic-man-27092692/">02</a> · <a target="_blank" rel="noopener" href="https://www.pexels.com/photo/shirtless-man-holding-a-measuring-tape-and-a-bowl-of-vegetables-5714276/">03</a> · <a target="_blank" rel="noopener" href="https://www.pexels.com/photo/crop-shirtless-plump-black-man-5301497/">04</a> · <a target="_blank" rel="noopener" href="https://www.pexels.com/photo/topless-man-using-black-cellphone-4728884/">05</a>。摄影人物不代表赞助或认可本站。</div></details>
+    <section id="visual" class="section measurement-section wrap" aria-labelledby="visualTitle">
+      <div class="section-title"><div><h2 id="visualTitle">先理解体脂输入的误差</h2><p>外观不能直接测出体脂，重复读数稳定也不等于测得准确。</p></div></div>
+      <div class="explain-grid"><article class="info-card"><h3>照片只说明外观</h3><p>肌肉量、脂肪分布、姿势与光线都会改变视觉效果。本工具不再把不同人物的照片标为体脂百分比，也不据此自动填写数值。</p></article><article class="info-card"><h3>读数依赖方法</h3><p>体脂秤等方法通过模型推算身体组成，设备与测量条件都会影响结果。不同方法的数值不宜直接互换。</p></article><article class="info-card"><h3>观察输入如何传导</h3><p>78 kg 体重下，体脂输入相差 3 个百分点，计算出的去脂体重就相差 2.34 kg。这是输入传播，不是新增或流失了等量肌肉。</p></article></div>
+      <p class="measurement-source">依据：<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10404482/" target="_blank" rel="noopener noreferrer">Siedler 等，2023：15 台 BIA 设备与四室模型比较</a>。上方 ±3 个百分点只是示例扰动，不是该研究给出的统一设备误差。</p>
     </section>
 
     <section id="definition" class="section principles-section wrap" aria-labelledby="principlesTitle">
-      <div class="section-title"><div><h2 id="principlesTitle">薄肌，不只看体重</h2><p>本工具用体脂与肌量共同定义薄肌参考状态。</p></div></div>
+      <div class="section-title"><div><h2 id="principlesTitle">薄肌，不只看体重</h2><p>本工具用体脂与去脂体重共同定义本站数字参考。</p></div></div>
       <div class="explain-grid">
         <article class="info-card"><h3>体脂率</h3><p class="principle-subtitle">薄肌参考：约 12%</p><p>本工具采用约 12% 体脂作为概念参考。这不是适用于所有人的健康标准，低于该数值也不自动代表更好。</p></article>
-        <article class="info-card"><h3>标准化 FFMI</h3><p class="principle-subtitle">肌量参考：20.5 及以上</p><p>本工具以标准化 FFMI ≥ 20.5 作为有一定肌量的建模门槛，并非官方或临床标准。去脂体重包含水、骨、器官与肌肉，不等于纯肌肉。</p></article>
-        <article class="info-card"><h3>变化周期</h3><p class="principle-subtitle">减脂与增肌分别估算</p><p>先计算保留肌量条件下的降脂时间，再计算需要补足的去脂体重。真实训练中可能同时发生，但无法保证叠加收益。</p></article>
+        <article class="info-card"><h3>标准化 FFMI</h3><p class="principle-subtitle">标准化 FFMI 参考：20.5 及以上</p><p>本工具以标准化 FFMI ≥ 20.5 作为有一定肌量的建模门槛，并非官方或临床标准。去脂体重包含水、骨、器官与肌肉，不等于纯肌肉。</p></article>
+        <article class="info-card"><h3>变化周期</h3><p class="principle-subtitle">阶段顺序只是模型假设</p><p>先减脂、后补足去脂体重只是本站的演示顺序。真实适应可能同时发生，也不能把去脂体重变化全部算成肌肉变化。</p></article>
       </div>
     </section>
 
     <section id="science" class="section science-section wrap" aria-labelledby="scienceTitle">
       <div class="section-title"><div><h2 id="scienceTitle">模型与依据</h2><p>了解怎么算，也了解估算的边界。</p></div></div>
       <div class="evidence">
-        <details open><summary><span>计算方式与情景参数</span><svg class="icon " aria-hidden="true"><use href="#i-plus"></use></svg></summary><div class="evidence-copy"><p>核心运算采用 <b>标准化 FFMI</b>（Kouri 1995）和按体重百分比计算的每周减重速度；增肌速度则设为独立可审计的三情景参数。增肌元分析观察到平均约 13 周增加 1.1 kg 去脂体重，但不能视为所有人的固定增长率。热量赤字会抑制去脂体重增长，因此模型默认以“先减脂、后补肌量”串行计算，不宣称两种适应可满速叠加。</p><p><b>当前情景参数：</b>保守 / 中心 / 较快的名义减重速度分别为每周 0.4% / 0.6% / 0.8%，随着体脂下降自动减速；体重损失中去脂体重占比分别假设为 10% / 5% / 0%（<b>工程假设，非研究给出的通用比例</b>）；新手每四周去脂体重增长分别假设为 0.20 / 0.35 / 0.50 kg，重新训练为 0.15 / 0.28 / 0.40 kg，有经验者为 0.07 / 0.13 / 0.22 kg。越有经验速度可能越慢，但这些不是可验证的个体定律。页面按自然周逐步模拟，最长 520 周。</p></div></details>
-        <details><summary><span>概念来源与研究依据</span><svg class="icon " aria-hidden="true"><use href="#i-plus"></use></svg></summary><div class="paper-list"><a class="paper" href="https://www.listenx.space/episode/boji-guide" target="_blank" rel="noopener"><b>概念来源：邵艾伦《薄肌指南》</b><span>转录摘要 · 审美参考 ≠ 科学诊断</span></a><a class="paper" href="https://pubmed.ncbi.nlm.nih.gov/7496846/" target="_blank" rel="noopener"><b>Kouri et al., 1995</b><span>FFMI 与身高标准化</span></a><a class="paper" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5867436/" target="_blank" rel="noopener"><b>Morton et al., 2018 · BJSM</b><span>49 项研究；约 13 周、去脂体重变化</span></a><a class="paper" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7068252/" target="_blank" rel="noopener"><b>Benito et al., 2020 · 元分析</b><span>不同测量定义的肌量变化</span></a><a class="paper" href="https://pubmed.ncbi.nlm.nih.gov/34579132/" target="_blank" rel="noopener"><b>2021 · 力量训练者减脂综述</b><span>每周体重下降 0.5%–1.0% 参考</span></a><a class="paper" href="https://pubmed.ncbi.nlm.nih.gov/21558571/" target="_blank" rel="noopener"><b>Garthe et al., 2011 · 随机试验</b><span>慢速与快速减重对去脂体重的影响</span></a><a class="paper" href="https://pubmed.ncbi.nlm.nih.gov/34623696/" target="_blank" rel="noopener"><b>Murphy et al., 2022 · 元分析</b><span>热量赤字削弱去脂体重增加</span></a><a class="paper" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10579494/" target="_blank" rel="noopener"><b>Currier et al., 2023 · BJSM</b><span>抗阻训练方案与增肌效果</span></a></div></details>
+        <details open><summary><span>计算方式与情景参数</span><svg class="icon " aria-hidden="true"><use href="#i-plus"></use></svg></summary><div class="evidence-copy"><p>FFMI 的身高修正有研究来源；但本工具的参考阈值、增长表、损失份额和分段速率没有经过个人纵向数据校准。文献用于解释概念，不构成对本计算器个人预测能力的验证。</p><p>三组参数是审慎、中间与乐观的组合假设。抗阻训练研究报告的是组均变化，不能把短期均值按固定速度延长到数年。补足去脂体重也不等于增长了同样多的肌肉。</p><p>模型最多演算 520 周，这是计算截止，不是人体变化上限。初始或下一步 BMI 低于 18.5 时中止该路径。这是保守的软件护栏，并非个人健康诊断或训练建议。<a href="https://www.who.int/data/gho/data/indicators/indicator-details/GHO/prevalence-of-underweight-among-adults-bmi-18-%28crude-estimate%29-%28-%29" target="_blank" rel="noopener noreferrer">WHO 成人体重不足指标</a></p></div></details>
+        <details><summary><span>概念来源与研究依据</span><svg class="icon " aria-hidden="true"><use href="#i-plus"></use></svg></summary><div class="paper-list"><a class="paper" href="https://www.listenx.space/episode/boji-guide" target="_blank" rel="noopener"><b>概念来源：邵艾伦《薄肌指南》</b><span>转录摘要 · 审美参考 ≠ 科学诊断</span></a><a class="paper" href="https://pubmed.ncbi.nlm.nih.gov/7496846/" target="_blank" rel="noopener"><b>Kouri et al., 1995</b><span>FFMI 与身高标准化</span></a><a class="paper" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5867436/" target="_blank" rel="noopener"><b>Morton et al., 2018 · BJSM</b><span>49 项研究；约 13 周、去脂体重变化</span></a><a class="paper" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7068252/" target="_blank" rel="noopener"><b>Benito et al., 2020 · 元分析</b><span>不同测量定义的肌量变化</span></a><a class="paper" href="https://pubmed.ncbi.nlm.nih.gov/34579132/" target="_blank" rel="noopener"><b>2021 · 力量训练者减脂叙述综述</b><span>每周体重下降 0.5%–1.0% 参考</span></a><a class="paper" href="https://pubmed.ncbi.nlm.nih.gov/21558571/" target="_blank" rel="noopener"><b>Garthe et al., 2011 · 随机试验</b><span>慢速与快速减重对去脂体重的影响</span></a><a class="paper" href="https://pubmed.ncbi.nlm.nih.gov/34623696/" target="_blank" rel="noopener"><b>Murphy et al., 2022 · 元分析</b><span>热量赤字削弱去脂体重增加</span></a><a class="paper" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10579494/" target="_blank" rel="noopener"><b>Currier et al., 2023 · BJSM</b><span>抗阻训练方案与增肌效果</span></a></div></details>
         <details><summary><span>适用范围与模型局限</span><svg class="icon " aria-hidden="true"><use href="#i-plus"></use></svg></summary><div class="evidence-copy"><p class="fineprint"><b>模型边界：</b>默认成人男性。没有个人纵向体成分数据、运动执行记录、体脂测量误差与真实饮食能量收支时，无法给出可信的“X 天必然达标”；情景区间不是 95% 置信区间。电影明星（如彭于晏）的公开照片无法可靠反推实际体脂率或 FFMI，本站不冒用他人照片及指标。本站是独立非官方项目，不代表邵艾伦或任何摄影人物认可。</p></div></details>
       </div>
     </section>
   </main>
-  <footer class="wrap"><div><a class="footer-name" href="#top">boji</a><p>薄肌周期估算 · 独立非官方项目</p></div><p>所有计算在浏览器内完成。<br>不上传、不储存个人数据。</p><div class="footer-links"><a href="#science">模型说明</a><a href="https://github.com/chansir-eng/boji-office" target="_blank" rel="noopener noreferrer">GitHub <svg class="icon" aria-hidden="true"><use href="#i-up-right"></use></svg></a></div></footer>
+  <footer class="wrap"><div><a class="footer-name" href="#top">boji</a><p>薄肌时间情景模拟 · 独立非官方项目</p></div><p>所有计算在浏览器内完成。<br>不上传、不储存个人数据。</p><div class="footer-links"><a href="#science">模型说明</a><a href="https://github.com/chansir-eng/boji-office" target="_blank" rel="noopener noreferrer">GitHub <svg class="icon" aria-hidden="true"><use href="#i-up-right"></use></svg></a></div></footer>
   <noscript><div class="noscript">计算器需要启用 JavaScript。页面文字与模型说明仍可阅读。</div></noscript>
 </body>
 </html>

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-26T07:18:36.696Z",
+  "generatedAt": "2026-10-26T10:45:21.221Z",
   "title": "Design System: Boji",
   "extensions": {
     "colorMeta": {
@@ -60,11 +60,11 @@
       },
       "headline": {
         "displayName": "区段标题",
-        "purpose": "体脂参考、薄肌定义和模型依据等区段的标题。"
+        "purpose": "测量与误差、薄肌定义和模型依据等区段的标题。"
       },
       "title": {
         "displayName": "面板标题",
-        "purpose": "填写当前状态与薄肌周期估算面板标题。"
+        "purpose": "填写当前状态与薄肌时间情景模拟面板标题。"
       },
       "body": {
         "displayName": "正文",
@@ -76,7 +76,7 @@
       },
       "estimate": {
         "displayName": "主要周期数字",
-        "purpose": "用等宽数字与缩小单位强调时间范围。"
+        "purpose": "用等宽数字与缩小的“模拟周”单位呈现可完成组合的条件演算范围。"
       }
     },
     "shadows": [],
@@ -89,7 +89,7 @@
       {
         "name": "state-transition",
         "value": "0.2s",
-        "purpose": "按钮、输入边框、照片边框与分段控件的颜色过渡。"
+        "purpose": "按钮、输入边框与分段控件的颜色过渡。"
       },
       {
         "name": "navigation-underline",
@@ -131,12 +131,12 @@
       {
         "name": "single-column",
         "value": "850px",
-        "purpose": "最大宽度；首屏与工作区单列，照片三列。"
+        "purpose": "最大宽度；首屏与工作区单列。"
       },
       {
         "name": "mobile",
         "value": "600px",
-        "purpose": "最大宽度；面板缩边，照片两列，解释与文献单列。"
+        "purpose": "最大宽度；面板缩边，解释与文献单列。"
       },
       {
         "name": "narrow-mobile",
@@ -152,11 +152,11 @@
   },
   "components": [
     {
-      "name": "估算主按钮",
+      "name": "查看假设结果按钮",
       "kind": "button",
       "refersTo": "button-primary",
       "description": "主要提交操作；最小高度 48px，悬停变深、按下轻微缩小。",
-      "html": "<button class=\"ds-button ds-primary\" type=\"button\">估算所需时间 <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12h14m-6-6 6 6-6 6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button>",
+      "html": "<button class=\"ds-button ds-primary\" type=\"button\">查看假设结果 <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12h14m-6-6 6 6-6 6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button>",
       "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:12px;border:0;min-height:48px;padding:12px 18px;border-radius:9px;background:var(--accent,#526a43);color:var(--surface,#ffffff);font:550 14px/1.7 -apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;cursor:pointer;transition:background-color .2s var(--ease,cubic-bezier(.16,1,.3,1)),transform .2s var(--ease,cubic-bezier(.16,1,.3,1))}.ds-primary:hover{background:var(--accent-hover,#3e5431)}.ds-primary:active{transform:scale(.985)}.ds-primary:disabled{opacity:.5;cursor:not-allowed}.ds-button:focus-visible{outline:3px solid var(--accent,#526a43);outline-offset:4px}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}"
     },
     {
@@ -179,7 +179,7 @@
       "name": "页头锚点导航",
       "kind": "nav",
       "description": "无活动页签；悬停显示细下划线，键盘焦点保留外轮廓。",
-      "html": "<nav class=\"ds-nav\" aria-label=\"主导航\"><a href=\"#calculator\">周期估算</a><a href=\"#visual\">体脂参考</a><a href=\"#science\">模型与依据</a></nav>",
+      "html": "<nav class=\"ds-nav\" aria-label=\"主导航\"><a href=\"#calculator\">情景模拟</a><a href=\"#visual\">测量与误差</a><a href=\"#science\">模型与依据</a></nav>",
       "css": ".ds-nav{display:flex;align-items:center;gap:30px;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif}.ds-nav a{position:relative;display:flex;align-items:center;min-height:44px;color:var(--muted,#626c5d);font-size:13px;text-decoration:none}.ds-nav a::after{content:\"\";height:1px;background:var(--accent,#526a43);position:absolute;bottom:5px;inset-inline:0;transform:scaleX(0);transform-origin:left;transition:transform .24s var(--ease,cubic-bezier(.16,1,.3,1))}.ds-nav a:hover{color:var(--ink,#283126)}.ds-nav a:hover::after{transform:scaleX(1)}.ds-nav a:focus-visible{outline:3px solid var(--accent,#526a43);outline-offset:4px}@media(max-width:600px){.ds-nav{gap:18px}.ds-nav a{font-size:11px;white-space:nowrap}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}"
     },
     {
@@ -194,8 +194,8 @@
       "name": "结果面板",
       "kind": "card",
       "refersTo": "panel-result",
-      "description": "浅绿灰整面突出周期数字；预览采用当前默认示例。",
-      "html": "<section class=\"ds-result-panel\"><h2>薄肌周期估算</h2><p>达到薄肌参考的时间范围</p><div class=\"ds-estimate\">44–128 <small>周</small></div></section>",
+      "description": "浅绿灰整面呈现条件模拟周数；预览使用默认示例，紧邻文字限定其科普用途。",
+      "html": "<section class=\"ds-result-panel\"><h2>薄肌时间情景模拟</h2><p>三组假设下的模拟周数</p><div class=\"ds-estimate\">44–128 <small>模拟周</small></div><p>组合假设对照，不是置信区间。不预测个人完成时间。</p></section>",
       "css": ".ds-result-panel{background:var(--result,#eef2e9);color:var(--ink,#283126);border-radius:var(--radius,16px);padding:32px;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif}.ds-result-panel h2{margin:0;font-size:20px;font-weight:650;letter-spacing:-.02em}.ds-result-panel p{margin:28px 0 0;color:var(--muted,#626c5d);font-size:12px}.ds-estimate{margin-top:2px;color:var(--accent,#526a43);font-size:clamp(48px,6vw,76px);line-height:1.3;font-weight:600;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.ds-estimate small{color:var(--muted,#626c5d);font-size:19px;font-weight:450;letter-spacing:0;margin-left:3px}@media(max-width:600px){.ds-result-panel{padding:23px 20px;border-radius:12px}.ds-estimate{font-size:clamp(42px,13vw,66px);line-height:1.35}.ds-estimate small{font-size:17px}}"
     },
     {
@@ -203,16 +203,16 @@
       "kind": "custom",
       "refersTo": "preset-note",
       "description": "结果标题下的静态说明，“如何定义”链接通向薄肌参考定义。",
-      "html": "<p class=\"ds-preset-note\">薄肌参考：体脂约 12%，并具备一定肌量。<a href=\"#definition\">如何定义</a></p>",
+      "html": "<p class=\"ds-preset-note\">本站数字参考：体脂约 12% 与标准化 FFMI 20.5。<a href=\"#definition\">如何定义</a></p>",
       "css": ".ds-preset-note{margin:10px 0 0;color:var(--muted,#626c5d);font:11px/1.9 -apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif}.ds-preset-note a{margin-left:4px;white-space:nowrap;color:var(--accent,#526a43);text-underline-offset:4px;text-decoration-thickness:1px}.ds-preset-note a:hover{color:var(--accent-hover,#3e5431)}.ds-preset-note a:focus-visible{outline:3px solid var(--accent,#526a43);outline-offset:4px}"
     },
     {
       "name": "结果状态",
       "kind": "chip",
       "refersTo": "status",
-      "description": "绿色用于示例或更新状态，棕色用于错误或不可计算，始终配合文字。",
-      "html": "<div class=\"ds-status-row\"><span class=\"ds-status\" data-state=\"ready\">示例估算</span><span class=\"ds-status\" data-state=\"unavailable\">无法估算</span></div>",
-      "css": ".ds-status-row{display:flex;gap:12px;flex-wrap:wrap}.ds-status{display:inline-block;color:var(--accent,#526a43);background:var(--accent-soft,#dfe7d8);border-radius:5px;padding:3px 9px;font:11px/1.7 -apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;white-space:nowrap}.ds-status[data-state=\"invalid\"],.ds-status[data-state=\"unavailable\"]{color:#8b4d2c;background:#f2e1d2}"
+      "description": "绿色用于示例或更新；棕色用于部分可演算、错误或不可计算，始终配合文字和有效组合限定。",
+      "html": "<div class=\"ds-status-row\"><span class=\"ds-status\" data-state=\"ready\">示例演算</span><span class=\"ds-status\" data-state=\"partial\">部分可演算</span><span class=\"ds-status\" data-state=\"unavailable\">不适用</span></div>",
+      "css": ".ds-status-row{display:flex;gap:12px;flex-wrap:wrap}.ds-status{display:inline-block;color:var(--accent,#526a43);background:var(--accent-soft,#dfe7d8);border-radius:5px;padding:3px 9px;font:11px/1.7 -apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;white-space:nowrap}.ds-status[data-state=\"invalid\"],.ds-status[data-state=\"unavailable\"],.ds-status[data-state=\"partial\"]{color:#8b4d2c;background:#f2e1d2}"
     },
     {
       "name": "图表指标切换",
@@ -223,21 +223,29 @@
       "css": ".ds-segmented{display:inline-flex;background:#e1e7db;border-radius:7px;padding:3px;gap:2px}.ds-segmented button{border:0;min-width:62px;min-height:36px;background:transparent;color:var(--muted,#626c5d);font:11px/1.7 -apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;padding:6px 11px;border-radius:5px;cursor:pointer;transition:background-color .2s var(--ease,cubic-bezier(.16,1,.3,1)),color .2s var(--ease,cubic-bezier(.16,1,.3,1))}.ds-segmented button:hover{color:var(--ink,#283126)}.ds-segmented button[aria-pressed=\"true\"]{background:var(--surface,#ffffff);color:var(--accent,#526a43)}.ds-segmented button:focus-visible{outline:3px solid var(--accent,#526a43);outline-offset:4px}@media(max-width:600px){.ds-segmented button{min-width:56px;min-height:38px}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}"
     },
     {
-      "name": "体脂参考卡片（图片回退）",
-      "kind": "card",
-      "refersTo": "reference-card",
-      "description": "当前实现中的图片加载失败状态；文字回退仍保留完整选择按钮。",
-      "html": "<button class=\"ds-photo-card\" type=\"button\" aria-pressed=\"false\" aria-label=\"选择12%体脂示例\"><div class=\"ds-photo-fallback\">图片暂未加载 · 仍可选择此档位</div><div class=\"ds-photo-copy\"><strong>10–13%</strong><span>线条高度清晰 · 视觉参考</span><em>选择 12%</em></div></button>",
-      "css": ".ds-photo-card{position:relative;display:block;width:210px;padding:0;background:var(--surface,#ffffff);color:var(--ink,#283126);border:1px solid var(--line,#d9dfd3);border-radius:12px;text-align:left;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif;cursor:pointer;transition:border-color .2s var(--ease,cubic-bezier(.16,1,.3,1)),background-color .2s var(--ease,cubic-bezier(.16,1,.3,1))}.ds-photo-card:hover{border-color:#889b7a}.ds-photo-card[aria-pressed=\"true\"]{border-color:var(--accent,#526a43);background:#e9efdf;outline:2px solid var(--accent,#526a43);outline-offset:1px}.ds-photo-card[aria-pressed=\"true\"]::after{content:\"已选\";position:absolute;right:9px;top:9px;background:var(--accent,#526a43);color:white;border-radius:5px;font-size:11px;padding:3px 8px}.ds-photo-card:focus-visible{outline:3px solid var(--accent,#526a43);outline-offset:4px}.ds-photo-fallback{display:grid;place-items:center;box-sizing:border-box;padding:25px;min-height:190px;background:#e6e9e0;color:var(--muted,#626c5d);font-size:12px;text-align:center}.ds-photo-copy{padding:15px 13px 13px}.ds-photo-copy strong{display:block;font-size:24px;line-height:1.3;font-weight:550;letter-spacing:-.025em;font-variant-numeric:tabular-nums}.ds-photo-copy span{display:block;font-size:10px;color:var(--muted,#626c5d);margin-top:7px}.ds-photo-copy em{display:flex;align-items:center;justify-content:space-between;color:var(--accent,#526a43);font-style:normal;font-size:11px;margin-top:17px;border-top:1px solid var(--line,#d9dfd3);padding-top:10px}.ds-photo-copy em::after{content:\"+\";font-size:17px;line-height:1}.ds-photo-card[aria-pressed=\"true\"] .ds-photo-copy em::after{content:\"−\"}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}"
+      "name": "体脂输入敏感性",
+      "kind": "custom",
+      "refersTo": "sensitivity",
+      "description": "当前体脂输入上下扰动3个百分点，展示去脂体重与中间假设时间；不是设备真实误差范围或置信区间。",
+      "html": "<section class=\"ds-sensitivity\"><h3>体脂输入差一点，结果会差多少？</h3><p>仅把当前体脂输入上下改变 3 个百分点，其余条件不变。这是敏感性演示，不是设备的真实误差范围，也不是置信区间。</p><table class=\"ds-scenario-table\"><thead><tr><th>体脂输入</th><th>计算去脂体重</th><th>中间假设</th></tr></thead><tbody><tr><th scope=\"row\">21.0%</th><td>61.6 kg</td><td>33 周</td></tr><tr><th scope=\"row\">24.0%</th><td>59.3 kg</td><td>69 周</td></tr><tr><th scope=\"row\">27.0%</th><td>56.9 kg</td><td>105 周</td></tr></tbody></table></section>",
+      "css": ".ds-sensitivity{border-top:1px solid #cbd5c3;margin-top:24px;padding-top:22px;color:var(--ink,#283126);font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif}.ds-sensitivity h3{margin:0;font-size:14px;font-weight:600}.ds-sensitivity>p{color:var(--muted,#626c5d);font-size:11px;line-height:1.9;margin:9px 0 0}.ds-sensitivity .ds-scenario-table th{white-space:normal}.ds-scenario-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px;font-variant-numeric:tabular-nums}.ds-scenario-table th{font-weight:400;color:var(--muted,#626c5d);padding:10px 9px;border-bottom:1px solid #cbd5c3;text-align:left}.ds-scenario-table td{padding:11px 9px;border-bottom:1px solid #d7dfd0}.ds-scenario-table :is(th,td):nth-child(n+2){text-align:right}.ds-scenario-table :is(th,td):first-child{padding-left:0}.ds-scenario-table :is(th,td):last-child{padding-right:0}@media(max-width:600px){.ds-scenario-table{font-size:11px}.ds-scenario-table :is(th,td){padding:11px 6px}}"
+    },
+    {
+      "name": "体脂测量说明",
+      "kind": "custom",
+      "refersTo": "measurement",
+      "description": "以三列细线说明外观、测量方法与输入传播；不使用照片百分比选择卡，小屏改为单列。",
+      "html": "<section class=\"ds-measurement\"><div class=\"ds-explain-grid\"><article class=\"ds-info-card\"><h3>照片只说明外观</h3><p>肌肉量、脂肪分布、姿势与光线都会改变视觉效果。外观不能直接测出体脂。</p></article><article class=\"ds-info-card\"><h3>读数依赖方法</h3><p>设备与测量条件都会影响结果。不同方法的数值不宜直接互换。</p></article><article class=\"ds-info-card\"><h3>观察输入如何传导</h3><p>78 kg 体重下，体脂输入相差 3 个百分点，计算去脂体重相差 2.34 kg。这不是等量肌肉变化。</p></article></div><p class=\"ds-measurement-source\">±3 个百分点只是示例扰动，不是统一设备误差。</p></section>",
+      "css": ".ds-measurement{color:var(--ink,#283126);font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",\"PingFang SC\",\"Microsoft YaHei\",sans-serif}.ds-explain-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.ds-info-card{padding:5px 32px 4px}.ds-info-card:first-child{padding-left:0}.ds-info-card:last-child{padding-right:0}.ds-info-card+.ds-info-card{border-left:1px solid var(--line,#d9dfd3)}.ds-info-card h3{margin:0;color:var(--accent,#526a43);font-size:22px;line-height:1.4;letter-spacing:-.02em;font-weight:600}.ds-info-card p{font-size:12px;color:var(--muted,#626c5d);line-height:1.9;margin:14px 0 0}.ds-measurement-source{color:var(--muted,#626c5d);font-size:11px;line-height:1.9;margin:20px 0 0}@media(max-width:850px){.ds-info-card{padding-inline:20px}}@media(max-width:600px){.ds-explain-grid{grid-template-columns:1fr}.ds-info-card,.ds-info-card:first-child,.ds-info-card:last-child{padding:23px 0}.ds-info-card:first-child{padding-top:0}.ds-info-card+.ds-info-card{border-left:0;border-top:1px solid var(--line,#d9dfd3)}.ds-info-card h3{font-size:21px}.ds-info-card p{margin-top:9px}}"
     }
   ],
   "narrative": {
     "northStar": "简洁、克制，像认真好用的健身工具",
-    "overview": "这句话是用户确认的方向。当前界面用浅色底面、低饱和绿色、清晰的数字层级和实用中文说明呈现薄肌周期估算。六项当前状态输入与结果构成主要工作区，照片参考、概念解释和依据按阅读顺序置于下方。本文记录已经落地的视觉实现。\n\n用户明确不喜欢旧版整活文案。当前文案直接表达行为、结果和限制，不再使用政务窗口隐喻。字体、配色与组件数值来自 `assets/styles.css`；这里的色彩名称是对实现用途的描述，并非额外确认的品牌偏好。",
+    "overview": "当前界面用浅色底面、低饱和绿色、清晰的数字层级和实用中文呈现薄肌时间情景模拟。六项当前状态输入与结果构成主要工作区，结果内展示输入敏感性与组合参数，测量误差、概念解释和依据按阅读顺序置于下方。本文记录已经落地的视觉实现。\n\n当前文案直接表达行为、结果和限制，明确条件演算不预测个人完成时间。字体、配色与组件数值来自 assets/styles.css。",
     "keyCharacteristics": [
       "浅色中性底面与克制的绿色强调。",
       "用排版、色面和细线建立层级。",
-      "数字先行，保留结果解释与模型边界。",
+      "用“模拟周”表达条件演算，紧邻数字说明假设与适用边界。",
       "桌面双栏、窄屏单栏，交互状态可辨认。"
     ],
     "rules": [],
@@ -245,13 +253,15 @@
       "**Do** 沿用现有绿色强调、浅色面板与细线层级，让关键数字和操作易于辨认。",
       "**Do** 同时呈现情景名称、线型或明确状态文字，保留模型边界与单位。",
       "**Do** 延续已实现的键盘焦点、表单错误关联和减少动态效果设置。",
-      "**Do** 为标题子集之外的文字保留系统字体回退。"
+      "**Do** 为标题子集之外的文字保留系统字体回退。",
+      "**Do** 在结果附近说明组合假设、部分可完成限定与输入敏感性。"
     ],
     "donts": [
       "**Don't** 恢复用户明确拒绝的整活文案和政务隐喻。",
       "**Don't** 把模型情景包装为确定完成日期或置信区间。",
       "**Don't** 把标题字体子集当作完整中文字体使用。",
-      "**Don't** 以纯颜色或仅动画表达当前已有文字说明的交互状态。"
+      "**Don't** 以纯颜色或仅动画表达当前已有文字说明的交互状态。",
+      "**Don't** 用去脂体重代表纯肌肉，或用人物外观直接标注体脂百分比。"
     ]
   }
 }

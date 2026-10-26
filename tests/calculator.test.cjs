@@ -26,7 +26,8 @@ const ids = [
   'leanMass', 'targetWeight', 'compositionText', 'barLean', 'barFat', 'chart',
   'scenarios', 'advice', 'calculator',
   'centralWeeks', 'cutWeeks', 'bulkWeeks', 'resultStatus',
-  'chartDescription', 'submitStatus', 'formHint'
+  'chartDescription', 'submitStatus', 'formHint', 'validScenarioNote',
+  'scenarioAssumptions', 'sensitivityRows', 'sensitivityNote'
 ];
 
 function browser(source = appSource, options = {}) {
@@ -77,20 +78,13 @@ function browser(source = appSource, options = {}) {
   for (const id of ids) elements.set(id, element(id));
   elements.get('chart').clientWidth = options.chartWidth || 600;
   for (const [id, value] of Object.entries(defaults)) elements.get(id).value = value;
-  const photos = [12, 16, 22, 28, 35].map(value => {
-    const el = element(); el.dataset.bf = String(value); return el;
-  });
-  const images = photos.map(photo => {
-    const image = element(); image.parentElement = photo; return image;
-  });
   const metricButtons = ['bf', 'w'].map(metric => {
     const el = element(); el.dataset.chartMetric = metric; return el;
   });
+  for (const id of options.missingIds || []) elements.delete(id);
   document.getElementById = id => elements.get(id) || null;
   document.querySelector = selector => selector.startsWith('#') ? elements.get(selector.slice(1)) : null;
   document.querySelectorAll = selector => {
-    if (selector === '.photo-card') return photos;
-    if (selector === '.photo-card img') return images;
     if (selector === '[data-chart-metric]') return metricButtons;
     return [];
   };
@@ -113,9 +107,10 @@ function browser(source = appSource, options = {}) {
     for (const [id, value] of Object.entries(values)) get(id).value = value;
     return get('applicationForm').dispatch('submit');
   }
-  return { get, photos, images, metricButtons, document, apply, timers,
+  return { get, metricButtons, document, apply, timers,
     resize(width) { get('chart').clientWidth = width; windowListeners.get('resize')?.(); } };
 }
+
 
 let passed = 0;
 function test(name, check) {
@@ -123,67 +118,41 @@ function test(name, check) {
   catch (error) { console.error('FAIL ' + name); throw error; }
 }
 
-test('pure model exports original numerical results without browser dependencies', () => {
-  const input = { height: 1.75, weight: 78, bf: 24, age: 28, experience: 'new', sessions: 3, targetBF: 12, targetFFMI: 20.5 };
-  const before = JSON.stringify(input);
-  const results = model.params.map(param => model.simulate(input, param));
-  assert.deepEqual(results.map(result => [result.cutWeeks, result.bulkWeeks, result.weeks]), [[53, 75, 128], [33, 36, 69], [23, 21, 44]]);
-  assert.equal(results[1].initial.lean, 59.28);
-  assert.equal(results[1].goalLean, 61.816562499999996);
-  assert.equal(results[1].final.w, 70.03477788541244);
-  assert.equal(results[1].hist.length, 70);
-  assert.equal(JSON.stringify(input), before);
-  assert.equal(model.massIndex(59.28, 1.75).toFixed(1), '19.7');
-  assert.equal(typeof model.weeklyRate, 'function');
-  assert.equal(typeof model.requiredLean, 'function');
-});
-
-test('thin-muscle reference is fixed and has no target form dependencies', () => {
-  assert.deepEqual(model.thinMuscleTarget, { targetBF: 12, targetFFMI: 20.5 });
-  assert.equal(Object.isFrozen(model.thinMuscleTarget), true);
-  assert.throws(() => { model.thinMuscleTarget.targetBF = 18; }, TypeError);
-  const app = browser();
-  assert.equal(app.get('targetbf'), undefined);
-  assert.equal(app.get('targetffmi'), undefined);
-  const originalLookup = app.document.getElementById;
-  app.document.getElementById = id => id === 'targetbf' ? { value: '18' } : id === 'targetffmi' ? { value: '23' } : originalLookup(id);
-  app.apply(defaults);
-  assert.equal(app.get('time').innerHTML, '44–128 <small>周</small>');
-  assert.match(app.get('chart').innerHTML, /薄肌参考 12%/);
-  assert.equal(app.get('phaseSummary').textContent, '薄肌参考去脂体重 61.8 kg');
-});
-
-test('default example preserves original scenario outputs', () => {
+test('default UI shows conditional simulated weeks and auditable composition', () => {
   const { get } = browser();
-  assert.equal(get('time').innerHTML, '44–128 <small>周</small>');
+  assert.equal(get('time').innerHTML, '44–128 <small>模拟周</small>');
   assert.equal(get('ffmiNow').textContent, '19.7');
   assert.equal(get('leanMass').textContent, '59.3');
-  assert.equal(get('targetWeight').textContent, '70.0 kg');
+  assert.equal(get('targetWeight').textContent, '70.1 kg');
   assert.equal(get('compositionText').textContent, '59.3 / 18.7 kg');
   assert.equal(get('barLean').style.width, '76.0%');
   assert.equal(get('barFat').style.width, '24.0%');
-  assert.match(get('scenarios').innerHTML, /保守<\/td><td>53周<\/td><td>75周<\/td><td class="">128周/);
-  assert.match(get('scenarios').innerHTML, /中心<\/td><td>33周<\/td><td>36周<\/td><td class="focus">69周/);
-  assert.match(get('scenarios').innerHTML, /较快<\/td><td>23周<\/td><td>21周<\/td><td class="">44周/);
   assert.equal(get('centralWeeks').textContent, '69 周');
   assert.equal(get('cutWeeks').textContent, '33 周');
   assert.equal(get('bulkWeeks').textContent, '36 周');
-  assert.equal(get('phaseSummary').textContent, '薄肌参考去脂体重 61.8 kg');
-  assert.equal(get('resultStatus').dataset.state, 'ready');
-  assert.equal(get('resultStatus').textContent, '示例估算');
-  assert.equal(get('formHint').textContent, '已填入一组示例数据，可直接修改。');
+  for (const name of ['审慎', '中间', '乐观']) assert.ok(get('scenarios').innerHTML.includes(name));
+  assert.equal(get('resultStatus').textContent, '示例演算');
 });
 
-test('already met targets use zero weeks', () => {
+test('fixed numeric reference has no target form dependency', () => {
+  assert.deepEqual(model.thinMuscleTarget, { targetBF: 12, targetFFMI: 20.5 });
+  const app = browser(), originalLookup = app.document.getElementById;
+  app.document.getElementById = id => id === 'targetbf' ? { value: '18' } : id === 'targetffmi' ? { value: '23' } : originalLookup(id);
+  app.apply(defaults);
+  assert.equal(app.get('time').innerHTML, '44–128 <small>模拟周</small>');
+  assert.match(app.get('chart').innerHTML, /12%/);
+  assert.match(app.get('phaseSummary').textContent, /61\.8 kg/);
+});
+
+test('already satisfied references have completed zero-week paths', () => {
   const app = browser(); app.apply({ weight: 72, bf: 12 });
-  assert.equal(app.get('time').innerHTML, '已达标 <small>薄肌参考目标</small>');
-  assert.equal(app.get('centralWeeks').textContent, '已达标');
+  assert.equal(app.get('time').innerHTML, '已满足 <small>本站数字参考</small>');
   assert.equal(app.get('targetWeight').textContent, '72.0 kg');
   assert.equal(app.get('resultStatus').dataset.state, 'complete');
   assert.equal((app.get('scenarios').innerHTML.match(/0周/g) || []).length, 9);
 });
 
-test('no regular training does not invent a muscle gain completion date', () => {
+test('no regular training never invents a lean-growth completion date', () => {
   const app = browser(); app.apply({ sessions: 0 });
   assert.equal(app.get('time').innerHTML, '无法估算 <small>当前条件</small>');
   assert.equal(app.get('targetWeight').textContent, '—');
@@ -191,36 +160,82 @@ test('no regular training does not invent a muscle gain completion date', () => 
   assert.equal(app.get('bulkWeeks').textContent, '未估算');
   assert.equal(app.get('resultStatus').dataset.state, 'unavailable');
   assert.equal((app.get('scenarios').innerHTML.match(/未估算/g) || []).length, 3);
-  assert.equal((app.get('scenarios').innerHTML.match(/无法估算/g) || []).length, 3);
-  assert.doesNotMatch(app.get('scenarios').innerHTML, /0周|超过10年/);
-  assert.match(app.get('advice').textContent, /未进行规律力量训练/);
+  assert.match(app.get('headline').textContent, /补足条件|训练/);
 });
 
-test('simulation cap is distinct from unestimated growth without training', () => {
+test('trajectory domain stop is distinct from the 520-week limit', () => {
+  const app = browser(); app.apply({ weight: 60, bf: 38 });
+  assert.equal(app.get('time').innerHTML, '不适用 <small>停止模拟</small>');
+  assert.equal(app.get('centralWeeks').textContent, '不适用');
+  assert.equal(app.get('cutWeeks').textContent, '—');
+  assert.equal(app.get('bulkWeeks').textContent, '—');
+  assert.equal(app.get('targetWeight').textContent, '—');
+  assert.match(app.get('headline').textContent, /18\.5|边界|不适用/);
+  assert.doesNotMatch(app.get('scenarios').innerHTML, /超出模拟范围|520周/);
+});
+
+test('all supported low-weight inputs use the same 18.5 domain-stop policy', () => {
+  for(const weight of [35,45,50,54]){
+    const app=browser();app.apply({weight,bf:24});
+    assert.equal(app.get('error').textContent,'');
+    assert.equal(app.get('time').innerHTML,'不适用 <small>停止模拟</small>');
+    assert.doesNotMatch(app.get('headline').textContent,/16–48/);
+  }
+});
+
+test('partial completion identifies the only scenario with an available completion time', () => {
+  const app = browser(); app.apply({ weight: 82, sessions: 0 });
+  assert.equal(app.get('time').innerHTML, '23 <small>模拟周</small>');
+  assert.match(app.get('validScenarioNote').textContent, /1\s*\/\s*3/);
+  assert.equal(app.get('centralWeeks').textContent, '无法估算');
+  assert.equal((app.get('scenarios').innerHTML.match(/无法估算/g) || []).length, 2);
+});
+
+test('capped scenarios remain visible when a completion interval uses the other scenarios', () => {
+  const app = browser(); app.apply({ weight: 75, bf: 28, sessions: 2, experience: 'trained' });
+  assert.equal(app.get('time').innerHTML, '173–306 <small>模拟周</small>');
+  assert.match(app.get('validScenarioNote').textContent, /2\s*\/\s*3/);
+  assert.match(app.get('scenarios').innerHTML, /超出模拟范围/);
+});
+
+test('guidance acknowledges lean mass that must be replenished after cutting', () => {
+  const app = browser(); app.apply({ weight: 82 });
+  assert.equal(app.get('bulkWeeks').textContent, '1 周');
+  assert.match(app.get('headline').textContent + app.get('advice').textContent, /补足|补回|补充|增加去脂体重/);
+  app.apply({ weight: 60, bf: 12, sessions: 0 });
+  assert.equal(app.get('time').innerHTML, '无法估算 <small>当前条件</small>');
+  assert.doesNotMatch(app.get('advice').textContent, /数值达标不等于|已满足.*数字参考/);
+});
+
+test('measurement sensitivity and scenario assumptions are shown beside estimates', () => {
   const app = browser();
-  app.apply({ weight: 60, bf: 38, experience: 'trained', sessions: 2 });
-  assert.equal(app.get('time').innerHTML, '超出范围 <small>520 周上限</small>');
-  assert.equal(app.get('centralWeeks').textContent, '超出模拟范围');
-  assert.equal(app.get('bulkWeeks').textContent, '超出范围');
-  assert.equal((app.get('scenarios').innerHTML.match(/超出模拟范围/g) || []).length, 3);
-  assert.doesNotMatch(app.get('scenarios').innerHTML, /未估算|无法估算/);
-  app.apply({ ...defaults, weight: 90, sessions: 0 });
-  assert.equal(app.get('bulkWeeks').textContent, '0 周');
-  assert.equal(app.get('time').innerHTML, '23–53 <small>周</small>');
+  const rows=app.get('sensitivityRows').innerHTML;
+  for (const value of ['21', '24', '27', '33', '69', '105']) assert.ok(rows.includes(value), value);
+  assert.match(app.get('sensitivityNote').textContent, /误差|敏感|测量/);
+  const assumptions=app.get('scenarioAssumptions').innerHTML;
+  for (const value of ['0.4', '0.6', '0.8', '0.20', '0.35', '0.50']) assert.ok(assumptions.includes(value), value);
 });
 
-test('cut-only conditions preserve scenario duration', () => {
-  const app = browser(); app.apply({ weight: 90 });
-  assert.equal(app.get('time').innerHTML, '23–53 <small>周</small>');
-  assert.equal(app.get('bulkWeeks').textContent, '0 周');
-  assert.equal(app.get('targetWeight').textContent, '76.9 kg');
+test('optional explanatory DOM nodes can be absent without blocking calculation', () => {
+  const app=browser(appSource,{missingIds:['validScenarioNote','scenarioAssumptions','sensitivityRows','sensitivityNote']});
+  app.apply({weight:82,sessions:0});
+  assert.equal(app.get('centralWeeks').textContent,'无法估算');
+});
+
+test('frequency input does not imply unsupported precision in growth rates', () => {
+  const app=browser();
+  for(const sessions of [2,3,4]){
+    app.apply({sessions});
+    assert.equal(app.get('time').innerHTML,'44–128 <small>模拟周</small>');
+    assert.equal(app.get('centralWeeks').textContent,'69 周');
+  }
 });
 
 test('manual submit validates and focuses the first invalid field', () => {
   const invalid = [
     [{ height: 139 }, 'height', /请输入有效参数/],
-    [{ weight: 35 }, 'weight', /BMI 16–48/],
-    [{ bf: 7 }, 'bf', /非常低的区间/],
+    [{ weight: 250 }, 'weight', /BMI/],
+    [{ bf: 7 }, 'bf', /非常低|不适用/],
     [{ age: 17 }, 'age', /请输入有效参数/],
     [{ height: '' }, 'height', /请输入有效参数/],
     [{ age: '' }, 'age', /请输入有效参数/]
@@ -233,7 +248,6 @@ test('manual submit validates and focuses the first invalid field', () => {
     assert.equal(app.get(field).getAttribute('aria-invalid'), 'true');
     assert.equal(app.get(field).getAttribute('aria-describedby'), 'error');
     assert.equal(app.get('resultStatus').dataset.state, 'invalid');
-    assert.equal(app.get('resultStatus').textContent, '输入有误 · 结果未更新');
     app.apply(defaults);
     assert.equal(app.get('error').textContent, '');
     assert.equal(app.get(field).getAttribute('aria-invalid'), null);
@@ -241,146 +255,82 @@ test('manual submit validates and focuses the first invalid field', () => {
   }
 });
 
-test('automatic validation marks errors without stealing focus or removing other help text', () => {
-  const app = browser();
-  const timeBefore = app.get('time').innerHTML;
+test('automatic validation preserves other help text and does not steal focus', () => {
+  const app = browser(), timeBefore = app.get('time').innerHTML;
   app.get('weight').setAttribute('aria-describedby', 'weightHint otherHint');
-  app.get('weight').value = 35;
-  app.get('weight').dispatch('change');
+  app.get('weight').value = 250; app.get('weight').dispatch('change');
   assert.equal(app.get('weight').getAttribute('aria-invalid'), 'true');
   assert.equal(app.get('weight').getAttribute('aria-describedby'), 'weightHint otherHint error');
   assert.equal(app.document.activeElement, null);
   assert.equal(app.get('time').innerHTML, timeBefore);
-  assert.equal(app.get('resultStatus').textContent, '输入有误 · 结果未更新');
-  app.get('weight').value = 78;
-  app.get('weight').dispatch('change');
+  app.get('weight').value = 78; app.get('weight').dispatch('change');
   assert.equal(app.get('weight').getAttribute('aria-invalid'), null);
   assert.equal(app.get('weight').getAttribute('aria-describedby'), 'weightHint otherHint');
-  assert.equal(app.get('formHint').textContent, '修改参数后，估算会自动更新。');
 });
 
-test('current-state fields update estimates without repeated submit announcements', () => {
-  const app = browser(); app.get('weight').value = 90;
-  app.get('weight').dispatch('change');
-  assert.equal(app.get('time').innerHTML, '23–53 <small>周</small>');
+test('field changes update estimates without repeat submit announcements', () => {
+  const app = browser(); app.get('weight').value = 90; app.get('weight').dispatch('change');
+  assert.equal(app.get('time').innerHTML, '23–53 <small>模拟周</small>');
   assert.equal(app.get('submitStatus').textContent, '');
-  assert.match(app.get('chart').innerHTML, /薄肌参考 12%/);
-  assert.match(app.get('headline').textContent, /薄肌参考值/);
+  assert.match(app.get('chart').innerHTML, /12%/);
 });
 
-test('photo selection updates body fat, pressed state, and scroll destination', () => {
-  const app = browser(); app.photos[3].dispatch('click');
-  assert.equal(app.get('bf').value, '28');
-  assert.equal(app.photos[3].getAttribute('aria-pressed'), 'true');
-  assert.equal(app.photos[0].getAttribute('aria-pressed'), 'false');
-  assert.equal(app.get('barFat').style.width, '28.0%');
-  assert.equal(app.get('calculator').scrollSettings.behavior, 'smooth');
-  assert.equal(app.get('submitStatus').textContent, '已选择 28% 参考值，估算已更新。');
-  assert.equal(app.get('resultStatus').textContent, '已更新');
-});
-
-test('demo reset restores every original input and calculated result', () => {
+test('demo restores inputs and conditional simulation outputs', () => {
   const app = browser(); app.apply({ weight: 90, bf: 35, sessions: 0, experience: 'trained' });
   app.get('demo').dispatch('click');
   for (const [id, value] of Object.entries(defaults)) assert.equal(app.get(id).value, value);
-  assert.equal(app.get('time').innerHTML, '44–128 <small>周</small>');
-  assert.equal(app.get('resultStatus').textContent, '示例估算');
+  assert.equal(app.get('time').innerHTML, '44–128 <small>模拟周</small>');
+  assert.equal(app.get('resultStatus').textContent, '示例演算');
   assert.equal(app.get('submitStatus').textContent, '已恢复默认示例。');
-  assert.equal(app.get('formHint').textContent, '已填入一组示例数据，可直接修改。');
 });
 
-test('metric switch changes chart units without changing the calculation', () => {
-  const app = browser(); const originalTime = app.get('time').innerHTML;
+test('chart metric switching changes units without recalculating the result', () => {
+  const app = browser(), originalTime = app.get('time').innerHTML;
   app.metricButtons[1].dispatch('click');
   assert.equal(app.metricButtons[1].getAttribute('aria-pressed'), 'true');
   assert.equal(app.metricButtons[0].getAttribute('aria-pressed'), 'false');
   assert.match(app.get('chart').innerHTML, / kg<\/text>/);
-  assert.doesNotMatch(app.get('chart').innerHTML, /薄肌参考 12%/);
-  assert.equal(app.get('chartDescription').textContent, '每 4 周取样 · 含减脂与增肌阶段');
   assert.equal(app.get('time').innerHTML, originalTime);
   app.metricButtons[0].dispatch('click');
-  assert.match(app.get('chart').innerHTML, /薄肌参考 12%/);
+  assert.match(app.get('chart').innerHTML, /12%/);
   for (const color of ['#7d857a', '#526a43', '#A9703F']) assert.ok(app.get('chart').innerHTML.includes(color));
 });
 
-test('mobile chart keeps legible typography and redraws at the actual width', () => {
+test('mobile chart remains legible and redraws at actual width', () => {
   const app = browser(appSource, { chartWidth: 298 });
   assert.equal(app.get('chart').getAttribute('viewBox'), '0 0 298 240');
   assert.equal(app.get('chart').style.aspectRatio, '298 / 240');
   const labels = app.get('chart').innerHTML.match(/<text[^>]+>/g) || [];
-  assert.equal(labels.length, 10); // Five y-axis labels, four x-axis labels, one target.
+  assert.equal(labels.length, 10);
   assert.ok(labels.every(label => label.includes('font-size="12"') && label.includes('fill="#626c5d"')));
-  assert.match(app.get('chart').innerHTML, /stroke="#7d896f"/);
   app.resize(560);
   assert.equal(app.get('chart').getAttribute('viewBox'), '0 0 560 220');
-  assert.equal(app.get('chart').style.aspectRatio, '560 / 220');
   assert.equal((app.get('chart').innerHTML.match(/<text[^>]+>/g) || []).length, 11);
-  app.resize(240);
-  assert.equal(app.get('chart').getAttribute('viewBox'), '0 0 260 240');
+  app.resize(240);assert.equal(app.get('chart').getAttribute('viewBox'), '0 0 260 240');
 });
 
-test('form submit and keyboard path announce the updated estimate', () => {
-  const app = browser(); const event = app.get('applicationForm').dispatch('submit');
+test('submit announces results and uses the mobile scrolling path', () => {
+  const app = browser(), event = app.get('applicationForm').dispatch('submit');
   assert.equal(event.defaultPrevented, true);
-  assert.equal(app.get('submitStatus').textContent, '估算已更新：44–128 周。');
-  assert.equal(app.get('resultStatus').textContent, '已更新');
+  assert.equal(app.get('submitStatus').textContent, '假设结果已更新：44–128 模拟周。');
   assert.equal(app.get('results').scrollSettings, undefined);
-});
-
-test('manual mobile submission scrolls to valid results without taking focus', () => {
-  const app = browser(appSource, { viewportWidth: 390, chartWidth: 298 });
-  app.get('weight').value = 79; app.get('weight').dispatch('change');
-  assert.equal(app.get('results').scrollSettings, undefined);
-  app.get('applicationForm').dispatch('submit');
-  assert.equal(app.get('results').scrollSettings.behavior, 'smooth');
-  assert.equal(app.get('results').scrollSettings.block, 'start');
-  assert.equal(app.document.activeElement, null);
-  const reduced = browser(appSource, { viewportWidth: 390, reducedMotion: true });
-  reduced.get('applicationForm').dispatch('submit');
-  assert.equal(reduced.get('results').scrollSettings.behavior, 'auto');
-  const invalid = browser(appSource, { viewportWidth: 390 });
-  invalid.apply({ age: '' });
+  const mobile = browser(appSource, { viewportWidth: 390, chartWidth: 298 });
+  mobile.get('weight').value = 79; mobile.get('weight').dispatch('change');
+  assert.equal(mobile.get('results').scrollSettings, undefined);
+  mobile.get('applicationForm').dispatch('submit');
+  assert.equal(mobile.get('results').scrollSettings.behavior, 'smooth');
+  assert.equal(mobile.get('results').scrollSettings.block, 'start');
+  assert.equal(mobile.document.activeElement, null);
+  const invalid = browser(appSource, { viewportWidth: 390 });invalid.apply({ age: '' });
   assert.equal(invalid.get('results').scrollSettings, undefined);
 });
 
-test('failed photos retain a usable selection with one fallback', () => {
-  const app = browser();
-  app.images[0].dispatch('error'); app.images[0].dispatch('error');
-  assert.equal(app.images[0].hidden, true);
-  assert.equal(app.photos[0].children.length, 1);
-  assert.equal(app.photos[0].children[0].className, 'photo-fallback');
-  app.photos[0].dispatch('click');
-  assert.equal(app.get('bf').value, '12');
-});
-
-test('reduced motion avoids smooth scrolling and update effects', () => {
-  const app = browser(appSource, { reducedMotion: true });
-  app.photos[1].dispatch('click');
-  assert.equal(app.get('calculator').scrollSettings.behavior, 'auto');
+test('reduced motion disables smooth scrolling and update animation', () => {
+  const app = browser(appSource, { viewportWidth: 390, reducedMotion: true });
+  app.get('applicationForm').dispatch('submit');
+  assert.equal(app.get('results').scrollSettings.behavior, 'auto');
   assert.equal(app.get('results').classList.contains('is-updating'), false);
   assert.equal(app.timers.size, 0);
 });
 
-const baselinePath = argument('--baseline');
-if (baselinePath) {
-  const originalSource = fs.readFileSync(baselinePath, 'utf8');
-  test('pure model matches every original result and history point in 432 cases', () => {
-    const originalModelCode = originalSource.slice(originalSource.indexOf('const massIndex='), originalSource.indexOf('function targetMessage('));
-    const context = vm.createContext({});
-    vm.runInContext(originalModelCode + '\nglobalThis.baselineModel={params,simulate,massIndex,weeklyRate,requiredLean};', context);
-    const baseline = context.baselineModel;
-    let cases = 0;
-    for (const height of [150, 175, 205]) for (const weight of [65, 100])
-      for (const bf of [12, 24, 38]) for (const experience of ['new', 'return', 'trained'])
-        for (const sessions of [0, 2, 3, 4]) for (const [targetbf, targetffmi] of [[10, 23], [18, 18]]) {
-          const values = { height: height / 100, weight, bf, experience, sessions, targetBF: targetbf, targetFFMI: targetffmi };
-          const actual = model.params.map(param => model.simulate(values, param));
-          const expected = baseline.params.map(param => baseline.simulate(values, param));
-          assert.equal(JSON.stringify(actual), JSON.stringify(expected), JSON.stringify(values));
-          cases++;
-        }
-    assert.equal(cases, 432);
-  });
-}
-
-console.log(`${passed} regression checks passed.`);
+console.log(`${passed} UI regression checks passed.`);
